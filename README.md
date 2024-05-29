@@ -28,8 +28,9 @@
 ## 🙋‍♀️ 팀원
 |**김나현**|**김종원**|**장현준**|**조은희**|
 |:--:|:--:|:--:|:--:|
-|<br>&nbsp;|<br>&nbsp;|<br>&nbsp;|<br>&nbsp;|
-<br><br>
+|![nh](https://github.com/beyond-sw-camp/be08-1st-2team/assets/50538268/03a3cef0-f0f9-43b3-a4e5-923ef03dcf94)|![jw](https://github.com/beyond-sw-camp/be08-1st-2team/assets/50538268/053be393-21bd-4ba1-8670-87cc03fd0efa)|![hj](https://github.com/beyond-sw-camp/be08-1st-2team/assets/50538268/87a81094-5896-409a-bd28-07286394ca15)|![eh](https://github.com/beyond-sw-camp/be08-1st-2team/assets/50538268/782bc8df-6407-42d3-9fdb-e27bcc909252)|
+
+<br>
 
 ## ⏰ WBS
 [2조 WBS 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=1981783699)
