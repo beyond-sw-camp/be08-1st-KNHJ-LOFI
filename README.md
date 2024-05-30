@@ -34,6 +34,7 @@
 
 ## ⏰ WBS
 [2조 WBS 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=1981783699)
+<br><br>
 
 ## ✏ 요구사항 정의서
 [2조 요구사항 정의서 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=0)
@@ -45,9 +46,16 @@
 
 ## 🗃 테이블 명세서
 [2조 테이블 명세서 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=598624480)
+<br><br>
 
 ## DCL
 
+<br><br>
+
 ## DDL
 
+<br><br>
+
 ## 테스트 케이스
+
+<br><br>
