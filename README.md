@@ -1,3 +1,6 @@
+![git-image-001](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/f82e1b48-88e4-40af-882e-afc5e1465fd7)
+
+<br><br>
 # 🔎 잃어버린 물건을 찾아서
 기간 : 2024.05.25 ~ 2024.06.03
 
