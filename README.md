@@ -129,8 +129,8 @@ CREATE TABLE tb_match (
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY(match_no),
-    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no),
-    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
+    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no) DELETE ON CASCADE,
+    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no) DELETE ON CASCADE
 );
 
 -- 게시판 테이블 (tb_board)
@@ -157,7 +157,7 @@ CREATE TABLE tb_notification (
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (noti_no),
     FOREIGN KEY (user_no) REFERENCES tb_user(user_no),
-    FOREIGN KEY (match_no) REFERENCES tb_match(match_no)
+    FOREIGN KEY (match_no) REFERENCES tb_match(match_no) DELETE ON CASCADE
 );
 
 -- 지역 테이블(tb_region)
