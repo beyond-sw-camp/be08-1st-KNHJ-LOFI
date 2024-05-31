@@ -52,10 +52,139 @@
 <br><br>
 
 ## DCL
-
+```sql
+GRANT ALL PRIVILEGES ON lostitems.* TO `items`@`%`;
+```
 <br><br>
 
 ## DDL
+```sql
+CREATE DATABASE lostItems;
+CREATE USER `items`@`%` IDENTIFIED BY 'items';
+
+-- 사용자 테이블 (tb_user)
+CREATE TABLE tb_user (
+    user_no INT,
+    user_id VARCHAR(30) UNIQUE,
+    user_pw VARCHAR(30) NOT NULL,
+    user_mail VARCHAR(30) UNIQUE,
+    user_tel VARCHAR(15) NOT NULL,
+    user_addr VARCHAR(100) NOT NULL,
+    role_no INT,
+    ins_date DATE DEFAULT CURDATE(),
+	 upt_date DATE DEFAULT CURDATE(),
+    PRIMARY KEY (user_no),
+    FOREIGN KEY (role_no) REFERENCES tb_role(role_no)
+);
+
+-- 분실물 테이블(tb_lost_item)
+CREATE TABLE tb_lost_item(
+    l_item_no INT,
+    l_item_name VARCHAR(100) NOT NULL,
+    l_item_region VARCHAR(50) NOT NULL,
+    l_item_time DATE DEFAULT CURDATE(),
+    l_item_des VARCHAR(300),
+    user_no INT NOT NULL,
+    category_no INT NOT NULL,
+    region_no INT NOT NULL,
+    ins_date DATE DEFAULT CURDATE(),
+	 upt_date DATE DEFAULT CURDATE(),
+    PRIMARY KEY (l_item_no),
+    FOREIGN KEY (user_no) REFERENCES tb_user,
+    FOREIGN KEY (category_no) REFERENCES tb_category,
+    FOREIGN KEY (region_no) REFERENCES tb_region
+);
+
+-- 습득물 테이블(tb_found_item)
+CREATE TABLE tb_found_item(
+	 f_item_no INT,
+	 f_item_name VARCHAR(100) NOT NULL,
+	 f_item_region VARCHAR(100) NOT NULL,
+	 f_item_time DATE DEFAULT CURDATE(),
+	 f_item_des VARCHAR(300),
+	 user_no INT NOT NULL,
+	 category_no INT NOT NULL,
+	 region_no INT NOT NULL,
+	 ins_date DATE DEFAULT CURDATE(),
+	 upt_date DATE DEFAULT CURDATE(),
+	 PRIMARY KEY(f_item_no),
+	 FOREIGN KEY(user_no) REFERENCES tb_user,
+	 FOREIGN KEY(category_no) REFERENCES tb_category,
+	 FOREIGN KEY(region_no) REFERENCES tb_region
+);
+
+-- 매칭 테이블(tb_match)
+CREATE TABLE tb_match (
+    match_no INT,
+    f_item_no INT NOT NULL,
+    l_item_no INT NOT NULL,
+    match_status BOOLEAN NOT NULL DEFAULT FALSE,
+    match_date DATE DEFAULT CURDATE(),
+	 ins_date DATE DEFAULT CURDATE(),
+	 upt_date DATE DEFAULT CURDATE(),
+    PRIMARY KEY(match_no),
+    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no),
+    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
+);
+
+-- 게시판 테이블 (tb_board)
+CREATE TABLE tb_board (
+    board_no INT PRIMARY KEY,
+    board_title VARCHAR(100) NOT NULL,
+    board_detail VARCHAR(300) NOT NULL,
+    board_type CHAR(1) NOT NULL CHECK (board_type IN ('b','r', 'n')),
+    ins_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
+    up_board_no INT,
+    user_no INT NOT NULL
+);
+
+-- 알림 테이블 (tb_notification)
+CREATE TABLE tb_notification (
+    noti_no INT,
+    noti_date DATE DEFAULT CURDATE(),
+    detail VARCHAR(300) NOT NULL,
+    user_no INT NOT NULL,
+    match_no INT NOT NULL,
+    ins_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
+    PRIMARY KEY (noti_no),
+    FOREIGN KEY (user_no) REFERENCES tb_user(user_no),
+    FOREIGN KEY (match_no) REFERENCES tb_match(match_no)
+);
+
+-- 지역 테이블(tb_region)
+CREATE TABLE tb_region (
+    region_no VARCHAR(10) PRIMARY KEY,
+    sido_name VARCHAR(10),
+    sigg_name VARCHAR(10),
+    emd_name VARCHAR(10),
+    li_name VARCHAR(10),
+    ranking VARCHAR(5),
+    ins_date VARCHAR(10),
+    del_date VARCHAR(10),
+    prev_region_no VARCHAR(10)
+);
+
+-- tb_region 인덱스 추가
+CREATE INDEX idx_tb_region ON tb_region(sido_name, sigg_name, emd_name, li_name);
+
+-- 권한 테이블(tb_role)
+CREATE TABLE tb_role (
+	role_no INT PRIMARY KEY,
+	role_name VARCHAR(10) UNIQUE
+);
+
+-- 카테고리 테이블(tb_category)
+CREATE TABLE tb_category (
+    category_no INT PRIMARY KEY,
+    category_name VARCHAR(20) NOT NULL
+);
+
+```
+<br><br>
+
+## DML
 
 <br><br>
 
