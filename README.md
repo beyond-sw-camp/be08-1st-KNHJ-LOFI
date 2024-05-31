@@ -191,6 +191,13 @@ CREATE TABLE tb_category (
 ```
 </details>
 
+<details>
+<summary>DML</summary>
+
+```sql
+```
+</details>
+
 ## 테스트 케이스
 
 <br><br>
