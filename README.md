@@ -51,13 +51,19 @@
 [2조 테이블 명세서 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=598624480)
 <br><br>
 
-## DCL
+## SQL
+
+<details>
+<summary>DCL</summary>
+
 ```sql
 GRANT ALL PRIVILEGES ON lostitems.* TO `items`@`%`;
 ```
-<br><br>
+</details>
 
-## DDL
+<details>
+<summary>DDL</summary>
+
 ```sql
 CREATE DATABASE lostItems;
 CREATE USER `items`@`%` IDENTIFIED BY 'items';
@@ -183,7 +189,7 @@ CREATE TABLE tb_category (
 );
 
 ```
-<br><br>
+</details>
 
 ## 테스트 케이스
 
