@@ -185,16 +185,6 @@ CREATE TABLE tb_category (
 ```
 <br><br>
 
-## DML
-```sql
--- 사용자 조회
-SELECT `user_id`, `user_pw`
-FROM `tb_user`
-WHERE `user_id` = '사용자아이디' AND `user_pw` = SHA2('사용자패스워드', 256);
-```
-
-<br><br>
-
 ## 테스트 케이스
 
 <br><br>
