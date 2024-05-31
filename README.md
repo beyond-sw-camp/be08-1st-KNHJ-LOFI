@@ -136,7 +136,8 @@ CREATE TABLE tb_board (
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     up_board_no VARCHAR(10),
-    user_no VARCHAR(10) NOT NULL REFERENCES tb_user
+    user_no VARCHAR(10) NOT NULL,
+    FOREIGN KEY(user_no) REFERENCES tb_user
 );
 
 -- 알림 테이블 (tb_notification)
