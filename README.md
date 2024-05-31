@@ -72,7 +72,7 @@ CREATE TABLE tb_user (
     user_addr VARCHAR(100) NOT NULL,
     role_no INT,
     ins_date DATE DEFAULT CURDATE(),
-	 upt_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (user_no),
     FOREIGN KEY (role_no) REFERENCES tb_role(role_no)
 );
@@ -88,7 +88,7 @@ CREATE TABLE tb_lost_item(
     category_no INT NOT NULL,
     region_no INT NOT NULL,
     ins_date DATE DEFAULT CURDATE(),
-	 upt_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (l_item_no),
     FOREIGN KEY (user_no) REFERENCES tb_user,
     FOREIGN KEY (category_no) REFERENCES tb_category,
@@ -185,6 +185,12 @@ CREATE TABLE tb_category (
 <br><br>
 
 ## DML
+```sql
+-- 사용자 조회
+SELECT `user_id`, `user_pw`
+FROM `tb_user`
+WHERE `user_id` = '사용자아이디' AND `user_pw` = SHA2('사용자패스워드', 256);
+```
 
 <br><br>
 
