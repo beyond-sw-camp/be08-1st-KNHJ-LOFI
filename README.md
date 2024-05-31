@@ -64,7 +64,7 @@ CREATE USER `items`@`%` IDENTIFIED BY 'items';
 
 -- 사용자 테이블 (tb_user)
 CREATE TABLE tb_user (
-    user_no INT,
+    user_no VARCHAR(10),
     user_id VARCHAR(30) UNIQUE,
     user_pw VARCHAR(30) NOT NULL,
     user_mail VARCHAR(30) UNIQUE,
@@ -79,14 +79,14 @@ CREATE TABLE tb_user (
 
 -- 분실물 테이블(tb_lost_item)
 CREATE TABLE tb_lost_item(
-    l_item_no INT,
+    l_item_no VARCHAR(10),
     l_item_name VARCHAR(100) NOT NULL,
     l_item_region VARCHAR(50) NOT NULL,
     l_item_time DATE DEFAULT CURDATE(),
     l_item_des VARCHAR(300),
-    user_no INT NOT NULL,
+    user_no VARCHAR(10) NOT NULL,
     category_no INT NOT NULL,
-    region_no INT NOT NULL,
+    region_no VARCHAR(10) NOT NULL,
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (l_item_no),
@@ -97,14 +97,14 @@ CREATE TABLE tb_lost_item(
 
 -- 습득물 테이블(tb_found_item)
 CREATE TABLE tb_found_item(
-    f_item_no INT,
+    f_item_no VARCHAR(10),
     f_item_name VARCHAR(100) NOT NULL,
     f_item_region VARCHAR(100) NOT NULL,
     f_item_time DATE DEFAULT CURDATE(),
     f_item_des VARCHAR(300),
-    user_no INT NOT NULL,
+    user_no VARCHAR(10) NOT NULL,
     category_no INT NOT NULL,
-    region_no INT NOT NULL,
+    region_no VARCHAR(10) NOT NULL,
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY(f_item_no),
@@ -115,9 +115,9 @@ CREATE TABLE tb_found_item(
 
 -- 매칭 테이블(tb_match)
 CREATE TABLE tb_match (
-    match_no INT,
-    f_item_no INT NOT NULL,
-    l_item_no INT NOT NULL,
+    match_no VARCHAR(10),
+    f_item_no VARCHAR(10) NOT NULL,
+    l_item_no VARCHAR(10) NOT NULL,
     match_status BOOLEAN NOT NULL DEFAULT FALSE,
     match_date DATE DEFAULT CURDATE(),
     ins_date DATE DEFAULT CURDATE(),
@@ -129,23 +129,23 @@ CREATE TABLE tb_match (
 
 -- 게시판 테이블 (tb_board)
 CREATE TABLE tb_board (
-    board_no INT PRIMARY KEY,
+    board_no VARCHAR(10) PRIMARY KEY,
     board_title VARCHAR(100) NOT NULL,
     board_detail VARCHAR(300) NOT NULL,
     board_type CHAR(1) NOT NULL CHECK (board_type IN ('b','r', 'n')),
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
-    up_board_no INT,
-    user_no INT NOT NULL
+    up_board_no VARCHAR(10),
+    user_no VARCHAR(10) NOT NULL REFERENCES tb_user
 );
 
 -- 알림 테이블 (tb_notification)
 CREATE TABLE tb_notification (
-    noti_no INT,
+    noti_no VARCHAR(10),
     noti_date DATE DEFAULT CURDATE(),
     detail VARCHAR(300) NOT NULL,
-    user_no INT NOT NULL,
-    match_no INT NOT NULL,
+    user_no VARCHAR(10) NOT NULL,
+    match_no VARCHAR(10) NOT NULL,
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (noti_no),
