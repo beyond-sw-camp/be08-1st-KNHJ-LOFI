@@ -97,20 +97,20 @@ CREATE TABLE tb_lost_item(
 
 -- 습득물 테이블(tb_found_item)
 CREATE TABLE tb_found_item(
-	 f_item_no INT,
-	 f_item_name VARCHAR(100) NOT NULL,
-	 f_item_region VARCHAR(100) NOT NULL,
-	 f_item_time DATE DEFAULT CURDATE(),
-	 f_item_des VARCHAR(300),
-	 user_no INT NOT NULL,
-	 category_no INT NOT NULL,
-	 region_no INT NOT NULL,
-	 ins_date DATE DEFAULT CURDATE(),
-	 upt_date DATE DEFAULT CURDATE(),
-	 PRIMARY KEY(f_item_no),
-	 FOREIGN KEY(user_no) REFERENCES tb_user,
-	 FOREIGN KEY(category_no) REFERENCES tb_category,
-	 FOREIGN KEY(region_no) REFERENCES tb_region
+    f_item_no INT,
+    f_item_name VARCHAR(100) NOT NULL,
+    f_item_region VARCHAR(100) NOT NULL,
+    f_item_time DATE DEFAULT CURDATE(),
+    f_item_des VARCHAR(300),
+    user_no INT NOT NULL,
+    category_no INT NOT NULL,
+    region_no INT NOT NULL,
+    ins_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
+    PRIMARY KEY(f_item_no),
+    FOREIGN KEY(user_no) REFERENCES tb_user,
+    FOREIGN KEY(category_no) REFERENCES tb_category,
+    FOREIGN KEY(region_no) REFERENCES tb_region
 );
 
 -- 매칭 테이블(tb_match)
@@ -120,8 +120,8 @@ CREATE TABLE tb_match (
     l_item_no INT NOT NULL,
     match_status BOOLEAN NOT NULL DEFAULT FALSE,
     match_date DATE DEFAULT CURDATE(),
-	 ins_date DATE DEFAULT CURDATE(),
-	 upt_date DATE DEFAULT CURDATE(),
+    ins_date DATE DEFAULT CURDATE(),
+    upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY(match_no),
     FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no),
     FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
@@ -171,8 +171,8 @@ CREATE INDEX idx_tb_region ON tb_region(sido_name, sigg_name, emd_name, li_name)
 
 -- 권한 테이블(tb_role)
 CREATE TABLE tb_role (
-	role_no INT PRIMARY KEY,
-	role_name VARCHAR(10) UNIQUE
+    role_no INT PRIMARY KEY,
+    role_name VARCHAR(10) UNIQUE
 );
 
 -- 카테고리 테이블(tb_category)
