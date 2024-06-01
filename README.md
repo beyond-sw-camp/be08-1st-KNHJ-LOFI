@@ -41,14 +41,38 @@
 
 ## ✏ 요구사항 정의서
 [2조 요구사항 정의서 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=0)
+
+<br>
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/ceb81f56-b9ba-43f6-9bda-49826f43da6c)
 <br><br>
 
 ## 📝 데이터 베이스 설계
 [2조 ERD 바로가기](https://www.erdcloud.com/d/qpyT8r7NFLFYaGqGa)
+
+<br>
+
+![프로젝트](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/ca7661cf-49f5-471c-b697-b6e3bf80fea9)
 <br><br>
 
 ## 🗃 테이블 명세서
 [2조 테이블 명세서 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=598624480)
+
+<br>
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/d264c4e2-fff1-4bd0-a473-93bb2ba9ea92)
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/fd8dd094-e8ab-42e7-aeef-ebe5dd8328e7)
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/d6d383c4-6e21-4571-89b0-1712da14b9de)
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/e0bc38a2-0da7-441e-9610-f11975e38ac3)
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/a8e3a6c8-a0f8-40e9-adb9-03eed42a6993)
+
+<br>
+
+
 <br><br>
 
 ## SQL
@@ -195,7 +219,434 @@ CREATE TABLE tb_category (
 ```
 </details>
 
+<br><br>
 
 ## 테스트 케이스
 
+<details><summary>DML
+</summary>
+
+<details><summary>1. 사용자
+</summary>
+
+<details><summary>가입
+</summary>
+
+```sql
+INSERT INTO tb_user
+VALUES ('사용자 번호', '사용자 이름', '사용자 아이디', '사용자 비밀번호', '사용자 이메일', '전화번호', '지역', 권한번호, DEFAULT, DEFAULT);
+```
+</details>
+<details><summary>로그인
+</summary>
+
+```sql
+SELECT `user_id`, `user_pw`
+FROM tb_user
+WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
+```
+</details>
+<details><summary>아이디 찾기
+</summary>
+
+```sql
+SELECT `user_id`,
+        `user_mail`
+FROM tb_user
+WHERE `user_mail` = '사용자 이메일';
+```
+</details>
+
+<details><summary>비밀번호 찾기/변경
+</summary>
+
+```sql
+UPDATE tb_user
+SET `user_pw` = SHA2('변경 할 비밀번호', 256)
+WHERE `user_pw` = (
+	SELECT `user_pw` 
+	FROM `tb_user`
+	WHERE `user_id` = '사용자 아이디' 
+	  AND `user_mail` = '사용자 이메일'
+	  AND `user_tel` = '사용자 전화번호');
+```
+</details>
+<details><summary>사용자 정보 조회
+</summary>
+
+```sql
+SELECT `user_name`, `user_mail`, `user_tel`, `user_addr`
+FROM tb_user
+WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
+```
+</details>
+
+<details><summary>문의
+</summary>
+
+```sql
+INSERT INTO tb_board
+VALUES ('문의 번호', '제목', '내용',
+ 'b', DEFAULT, DEFAULT, NULL, '사용자 번호');
+```
+</details>
+
+<details><summary>탈퇴
+</summary>
+
+```sql
+DELETE
+FROM tb_user
+WHERE `user_id` = '사용자 아이디' 
+  AND `user_pw` = SHA2('사용자 비밀번호', 256)
+  AND `user_email` = '사용자 이메일';
+```
+</details>
+</details>
+
+<details><summary>2. 분실물
+</summary>
+
+<details><summary>분실물 등록
+</summary>
+
+```sql
+INSERT INTO tb_lost_item 
+VALUES (GET_NO('분실물 번호'), '분실물 이름', 분실 장소', '분실 시간', '설명',
+            분실물 등록일자', '분실물 수정일자', '사용자 번호', '카테고리 번호', '지역 번호');
+```
+</details>
+
+
+<details><summary>분실물 검색
+</summary>
+
+```sql
+SELECT lost.*
+FROM tb_lost_item lost
+INNER JOIN tb_region region ON lost.region_no = region.region_no
+INNER JOIN tb_category cate ON lost.category_no = cate.category_no
+WHERE lost.category_no = '카테고리 번호' 
+AND lost.category_no = cate.category_no
+AND lost.region_no = region.region_no;
+```
+</details>
+
+<details><summary>분실물 수정
+</summary>
+
+```sql
+UPDATE tb_lost_item
+INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
+SET l_item_name = '수정할 수집품 이름',
+     l_item_region = '수정할 수집품 장소',
+     l_item_des = '수정할 수집품 설명'
+WHERE user_id = '사용자 아이디' AND l_item_no = '분실물 번호';
+```
+</details>
+
+<details><summary>분실물 삭제
+</summary>
+
+```sql
+DELETE
+FROM tb_lost_item
+WHERE l_item_no IN (
+    SELECT li.l_item_no
+    FROM tb_lost_item li
+    LEFT OUTER JOIN tb_match m ON li.l_item_no = m.l_item_no
+    WHERE m.match_status = 0
+      AND li.l_item_no = '분실물 번호');
+```
+</details>
+
+<details><summary>나의 분실물 조회
+</summary>
+
+```sql
+SELECT lost.*
+FROM tb_lost_item lost
+INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
+WHERE `user`.user_id = '사용자 아이디'
+ORDER BY lost.ins_date DESC; 
+```
+</details>
+</details>
+
+<details><summary>3. 습득물
+</summary>
+
+<details><summary>습득물 등록
+</summary>
+
+```sql
+INSERT INTO tb_lost_item
+VALUES ('습득물 번호',
+            '습득물 이름',
+            '습득 장소',
+            '습득 시간',
+            '설명',
+            '습득물 등록일자',
+            '습득물 수정일자',
+            '사용자 번호',
+            '카테고리 번호',
+            '지역 번호');
+```
+</details>
+
+
+<details><summary>습득물 조회
+</summary>
+
+```sql
+SELECT f.*
+FROM tb_found_item f
+INNER JOIN tb_category c ON f.category_no = c.category_no
+INNER JOIN tb_region r ON f.region_no = r.region_no
+WHERE category_name = '카테고리 이름' OR sido_name = '시도명';
+```
+</details>
+
+<details><summary>습득물 수정
+</summary>
+
+```sql
+UPDATE tb_found_item f
+INNER JOIN tb_user u ON f.user_no = u.user_no 
+SET f_item_name = '수정할 습득물 이름',
+     f_item_region = '수정할 습득 장소',
+     f_item_des = '수정할 습득물 상세정보내용',
+     ins_date = '수정한 날짜';
+```
+</details>
+
+<details><summary>습득물 삭제
+</summary>
+
+```sql
+DELETE
+FROM tb_found_item
+WHERE f_item_no IN (
+    SELECT f.f_item_no
+    FROM tb_fount_item f
+    LEFT OUTER JOIN tb_match m ON f.f_item_no = m.f_item_no
+    WHERE m.match_status = 0
+      AND fi.f_item_no = '분실물 번호');
+```
+</details>
+
+<details><summary>나의 습득물 조회
+</summary>
+
+```sql
+SELECT f.*, user_id
+FROM tb_found_item f
+INNER JOIN tb_user u ON f.user_no = u.user_no
+WHERE user_id = '사용자 아이디';
+```
+</details>
+</details>
+
+</details>
+
+<details><summary>트리거
+</summary>
+
+<details><summary>분실물이 등록된 경우 알림 전송 트리거
+</summary>
+    
+```sql
+DELIMITER $$
+CREATE OR REPLACE TRIGGER trg_match_loit
+AFTER INSERT ON tb_lost_item
+FOR EACH ROW
+BEGIN
+    DECLARE f_cnt INT;
+
+    SELECT COUNT(f_item_no) INTO f_cnt
+    FROM tb_found_item
+    WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+      AND category_no = NEW.category_no;
+
+    IF f_cnt >= 1 THEN
+        INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+        SELECT GET_NO('tb_match'),
+               f_item_no,
+               NEW.l_item_no
+        FROM tb_found_item
+        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+          AND category_no = NEW.category_no;
+    END IF;
+
+END$$
+DELIMITER ;
+```
+</details>
+
+<details><summary>습득물이 등록된 경우 알림 전송 트리거
+</summary>
+    
+```sql
+DELIMITER $$
+CREATE OR REPLACE TRIGGER trg_match_fdit
+AFTER INSERT ON tb_found_item
+FOR EACH ROW
+BEGIN
+    DECLARE l_cnt INT;
+
+    SELECT COUNT(l_item_no) INTO l_cnt
+    FROM tb_lost_item
+    WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+      AND category_no = NEW.category_no;
+
+    IF l_cnt >= 1 THEN
+        INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+        SELECT GET_NO('tb_match'),
+               NEW.f_item_no,
+               l_item_no
+        FROM tb_lost_item
+        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+          AND category_no = NEW.category_no;
+    END IF;
+
+END$$
+DELIMITER ;
+```
+</details>
+</details>
+
+</details>
+
+<details><summary>함수
+</summary>
+    
+```sql
+BEGIN
+	DECLARE v_prefix VARCHAR(10);
+ 	DECLARE v_hypen CHAR(1);
+ 	DECLARE v_formmater INT;
+	DECLARE v_no VARCHAR(30);
+	
+	-- id 규칙 가져오기
+	SELECT PREFIX, hypen_yn, formmater 
+	INTO v_prefix, v_hypen, v_formmater
+	FROM auto_no
+	WHERE TABLE_NAME = tb_name;
+	
+	-- 가져온 값으로 insert update
+	INSERT INTO auto_no_dtl
+	(TABLE_NAME, PREFIX, hypen_yn, formmater)
+	VALUES
+	(tb_name, v_prefix, v_hypen, v_formmater)
+	ON DUPLICATE KEY
+	UPDATE SEQUENCE = SEQUENCE + 1;
+	
+	SELECT CONCAT(PREFIX, if(hypen_yn = 'Y', '-', ''), LPAD(SEQUENCE, 8, '0')) INTO v_NO
+	FROM auto_no_dtl
+	WHERE TABLE_NAME = tb_name
+	  AND PREFIX = v_prefix
+	  AND hypen_yn = v_hypen
+	  AND formmater = v_formmater;
+
+	RETURN v_no;
+END
+```
+</details>
+
+<details><summary>프로시저
+</summary>
+
+<details><summary>180일 지난 습득물 삭제 프로시저
+</summary>
+
+```sql
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delFdProc ()
+BEGIN
+      INSERT INTO tb_recyclebin(
+      rb_no, delete_tpye, f_item_name, f_item_region, f_item_time, f_item_des, f_user_no, f_category_no, f_region_no
+      ) SELECT
+      GET_NO('tb_recyclebin') , 'PE', A.f_item_name, A.f_item_region, A.f_item_time, A.f_item_des, A.user_no, A.category_no, A.region_no
+      FROM tb_found_item A
+      LEFT OUTER JOIN
+        (SELECT fi.l_item_no
+         FROM tb_found_item fi
+         LEFT OUTER JOIN tb_match m ON m.f_item_no = li.f_item_no
+         WHERE 1=1
+           AND m.match_status = TRUE ) B ON B.f_item_no = A.f_item_no
+      WHERE 1=1
+        AND A.ins_date <= subDATE(CURDATE(), 180)
+        AND A.upt_date <= subDATE(CURDATE(), 180)
+        AND B.f_item_no IS NULL;
+
+      DELETE A FROM tb_found_item A
+      LEFT JOIN (
+          SELECT fi.l_item_no
+          FROM tb_found_item fi
+          LEFT JOIN tb_match m ON m.l_item_no = fi.l_item_no
+          WHERE m.match_status = TRUE
+      ) B ON B.f_item_no = A.f_item_no
+      WHERE A.ins_date <= SUBDATE(CURDATE(), 180)
+        AND A.upt_date <= SUBDATE(CURDATE(), 180)
+        AND B.f_item_no IS NULL;
+END $$
+DELIMITER ;
+```
+</details>
+
+
+<details><summary>180일 지난 분실물 삭제 프로시저
+</summary>
+
+```sql
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delLiProc ()
+BEGIN
+      INSERT INTO tb_recyclebin(
+      rb_no, delete_tpye, l_item_name, l_item_region, l_item_time, l_item_des, l_user_no, l_category_no, l_region_no
+      ) SELECT
+      GET_NO('tb_recyclebin') , 'PE', A.l_item_name, A.l_item_region, A.l_item_time, A.l_item_des, A.user_no, A.category_no, A.region_no
+      FROM tb_lost_item A
+      LEFT OUTER JOIN
+        (SELECT li.l_item_no
+         FROM tb_lost_item li
+         LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+         WHERE 1=1
+           AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+      WHERE 1=1
+        AND A.ins_date <= subDATE(CURDATE(), 180)
+        AND A.upt_date <= subDATE(CURDATE(), 180)
+        AND B.l_item_no IS NULL;
+
+      DELETE FROM tb_lost_item A, B
+      LEFT OUTER JOIN
+        (SELECT li.l_item_no
+         FROM tb_lost_item li
+         LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+         WHERE 1=1
+           AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+      WHERE 1=1
+        AND A.ins_date <= subDATE(CURDATE(), 180)
+        AND A.upt_date <= subDATE(CURDATE(), 180)
+        AND B.l_item_no IS NULL;
+END $$
+DELIMITER ;
+```
+</details>
+</details>
+
+<details><summary>이벤트
+</summary>
+
+<details><summary>기간 만료 물품 삭제 이벤트
+</summary>
+
+```sql
+BEGIN
+      CALL delLiProc();
+      CALL delFdProc();
+END
+```
+</details>
+</details>
 <br><br>
