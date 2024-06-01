@@ -75,7 +75,7 @@
 
 <br><br>
 
-## SQL
+## ⌨️ SQL
 
 <details>
 <summary>DCL</summary>
@@ -221,7 +221,7 @@ CREATE TABLE tb_category (
 
 <br><br>
 
-## 테스트 케이스
+## 💡 테스트 케이스
 
 <details><summary>DML
 </summary>
