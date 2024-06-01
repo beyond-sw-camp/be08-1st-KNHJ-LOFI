@@ -129,8 +129,10 @@ CREATE TABLE tb_match (
     ins_date DATE DEFAULT CURDATE(),
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY(match_no),
-    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no) DELETE ON CASCADE,
-    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no) DELETE ON CASCADE
+    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no)
+    DELETE ON CASCADE,
+    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
+    DELETE ON CASCADE
 );
 
 -- 게시판 테이블 (tb_board)
@@ -157,7 +159,8 @@ CREATE TABLE tb_notification (
     upt_date DATE DEFAULT CURDATE(),
     PRIMARY KEY (noti_no),
     FOREIGN KEY (user_no) REFERENCES tb_user(user_no),
-    FOREIGN KEY (match_no) REFERENCES tb_match(match_no) DELETE ON CASCADE
+    FOREIGN KEY (match_no) REFERENCES tb_match(match_no)
+    DELETE ON CASCADE
 );
 
 -- 지역 테이블(tb_region)
@@ -174,7 +177,8 @@ CREATE TABLE tb_region (
 );
 
 -- tb_region 인덱스 추가
-CREATE INDEX idx_tb_region ON tb_region(sido_name, sigg_name, emd_name, li_name);
+CREATE INDEX idx_tb_region
+ON tb_region(sido_name, sigg_name, emd_name, li_name);
 
 -- 권한 테이블(tb_role)
 CREATE TABLE tb_role (
