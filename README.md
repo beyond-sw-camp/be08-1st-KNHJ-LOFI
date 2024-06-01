@@ -447,9 +447,7 @@ WHERE user_id = '사용자 아이디';
 </details>
 </details>
 
-</details>
-
-<details><summary>트리거
+<details><summary>4. 트리거
 </summary>
 
 <details><summary>분실물이 등록된 경우 알림 전송 트리거
@@ -515,9 +513,7 @@ DELIMITER ;
 </details>
 </details>
 
-</details>
-
-<details><summary>함수
+<details><summary>5. 함수
 </summary>
     
 ```sql
@@ -553,7 +549,7 @@ END
 ```
 </details>
 
-<details><summary>프로시저
+<details><summary>6. 프로시저
 </summary>
 
 <details><summary>180일 지난 습득물 삭제 프로시저
@@ -635,7 +631,7 @@ DELIMITER ;
 </details>
 </details>
 
-<details><summary>이벤트
+<details><summary>7. 이벤트
 </summary>
 
 <details><summary>기간 만료 물품 삭제 이벤트
@@ -648,5 +644,12 @@ BEGIN
 END
 ```
 </details>
+</details>
+</details>
+
+
+
+
+
 </details>
 <br><br>
