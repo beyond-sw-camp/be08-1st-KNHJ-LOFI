@@ -40,7 +40,7 @@
 
 <br>
 
-![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/f7a92eba-b4c1-4f0b-ae6b-4f35ebbea7ce)
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/eabbd088-78c5-48fd-9850-ec817c5a3e00)
 
 <br><br>
 
