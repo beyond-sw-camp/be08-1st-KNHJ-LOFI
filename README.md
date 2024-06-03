@@ -540,7 +540,7 @@ WHERE user_id = '사용자 아이디';
 </details>
 </details>
 
-<details><summary>6. 트리거 트리거
+<details><summary>5. 트리거
 </summary>
 
 <details><summary>분실물이 등록된 경우 알림 전송 트리거
@@ -743,3 +743,11 @@ END
 </details>
 
 <br><br>
+
+## 🕯 회고
+| 이름 | 내용 |
+| :----: | :----: |
+| 김나현 | 내용 |
+| 김종원 | 내용 |
+| 장현준 | 내용 |
+| 조은희 | 내용 |
