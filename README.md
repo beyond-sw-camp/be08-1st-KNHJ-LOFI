@@ -37,6 +37,11 @@
 
 ## ⏰ WBS
 [2조 WBS 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=1981783699)
+
+<br>
+
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/f7a92eba-b4c1-4f0b-ae6b-4f35ebbea7ce)
+
 <br><br>
 
 ## ✏ 요구사항 정의서
