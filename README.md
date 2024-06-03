@@ -307,7 +307,97 @@ WHERE `user_id` = '사용자 아이디'
 </details>
 </details>
 
-<details><summary>2. 분실물
+<details><summary>2. 관리자
+</summary>
+
+<details><summary>매칭 상태 변경
+</summary>
+
+```sql
+UPDATE tb_match
+SET match_status = 1
+WHERE match_no = '매칭 번호'
+  AND user_no = '사용자 번호';
+```
+</details>
+<details><summary>카테고리 정보를 등록
+</summary>
+
+```sql
+INSERT INTO tb_category
+VALUES (카테고리 번호, '카테고리 이름');
+```
+</details>
+<details><summary>공지 사항 등록
+</summary>
+
+```sql
+INSERT INTO tb_board
+VALUES (GET_NO(tb_board), '제목', '내용',
+ 'n', DEFAULT, DEFAULT, NULL, '관리자 번호');
+```
+</details>
+
+<details><summary>공지 사항 삭제
+</summary>
+
+```sql
+DELETE
+FROM tb_board
+WHERE board_no = '공지사항 번호';
+```
+</details>
+<details><summary>공지 사항 수정
+</summary>
+
+```sql
+UPDATE tb_board
+SET '수정 할 컬럼' = '수정 할 내용'
+WHERE board_no = '공지사항 번호';
+```
+</details>
+
+<details><summary>지역 정보 등록
+</summary>
+
+```sql
+INSERT INTO tb_region
+VALUES ('지역 번호', '시, 도', '시, 구', '동, 면', '리', 'ranking', '등록 날짜');
+```
+</details>
+
+<details><summary>지역 정보 삭제
+</summary>
+
+```sql
+DELETE
+FROM tb_region
+WHERE region_no = '지역 번호';
+```
+</details>
+
+<details><summary>지역 정보 수정
+</summary>
+
+```sql
+UPDATE tb_region
+SET '수정 할 컬럼' = '수정 할 내용'
+WHERE region_no = '지역 번호';
+```
+</details>
+
+<details><summary>문의글에 대한 답변
+</summary>
+
+```sql
+INSERT INTO tb_board
+VALUES ('문의 답변 번호', '제목', '내용',
+ 'r', DEFAULT, DEFAULT, '문의글 번호', '관리자 번호');
+```
+</details>
+</details>
+
+<details><summary>3. 분실물
 </summary>
 
 <details><summary>분실물 등록
@@ -376,7 +466,7 @@ ORDER BY lost.ins_date DESC;
 </details>
 </details>
 
-<details><summary>3. 습득물
+<details><summary>4. 습득물
 </summary>
 
 <details><summary>습득물 등록
@@ -450,7 +540,7 @@ WHERE user_id = '사용자 아이디';
 </details>
 </details>
 
-<details><summary>4. 트리거
+<details><summary>6. 트리거 트리거
 </summary>
 
 <details><summary>분실물이 등록된 경우 알림 전송 트리거
@@ -516,7 +606,7 @@ DELIMITER ;
 </details>
 </details>
 
-<details><summary>5. 함수
+<details><summary>6. 함수
 </summary>
     
 ```sql
@@ -552,7 +642,7 @@ END
 ```
 </details>
 
-<details><summary>6. 프로시저
+<details><summary>7. 프로시저
 </summary>
 
 <details><summary>180일 지난 습득물 삭제 프로시저
@@ -634,7 +724,7 @@ DELIMITER ;
 </details>
 </details>
 
-<details><summary>7. 이벤트
+<details><summary>8. 이벤트
 </summary>
 
 <details><summary>기간 만료 물품 삭제 이벤트
