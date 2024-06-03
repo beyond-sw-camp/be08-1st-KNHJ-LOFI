@@ -85,143 +85,153 @@
 <details>
 <summary>DCL</summary>
 
-```sql
-GRANT ALL PRIVILEGES ON lostitems.* TO `items`@`%`;
-```
+- **DB 사용자 권한 부여**
+  <details>
+  <summary>SQL</summary>
+  
+  ```sql
+  GRANT ALL PRIVILEGES ON lostitems.* TO `items`@`%`;
+  ```
+  </details>
 </details>
 
 <details>
 <summary>DDL</summary>
 
-```sql
-CREATE DATABASE lostItems;
-CREATE USER `items`@`%` IDENTIFIED BY 'items';
-
--- 사용자 테이블 (tb_user)
-CREATE TABLE tb_user (
-    user_no VARCHAR(10),
-    user_id VARCHAR(30) UNIQUE,
-    user_pw VARCHAR(30) NOT NULL,
-    user_mail VARCHAR(30) UNIQUE,
-    user_tel VARCHAR(15) NOT NULL,
-    user_addr VARCHAR(100) NOT NULL,
-    role_no INT,
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    PRIMARY KEY (user_no),
-    FOREIGN KEY (role_no) REFERENCES tb_role(role_no)
-);
-
--- 분실물 테이블(tb_lost_item)
-CREATE TABLE tb_lost_item(
-    l_item_no VARCHAR(10),
-    l_item_name VARCHAR(100) NOT NULL,
-    l_item_region VARCHAR(50) NOT NULL,
-    l_item_time DATE DEFAULT CURDATE(),
-    l_item_des VARCHAR(300),
-    user_no VARCHAR(10) NOT NULL,
-    category_no INT NOT NULL,
-    region_no VARCHAR(10) NOT NULL,
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    PRIMARY KEY (l_item_no),
-    FOREIGN KEY (user_no) REFERENCES tb_user,
-    FOREIGN KEY (category_no) REFERENCES tb_category,
-    FOREIGN KEY (region_no) REFERENCES tb_region
-);
-
--- 습득물 테이블(tb_found_item)
-CREATE TABLE tb_found_item(
-    f_item_no VARCHAR(10),
-    f_item_name VARCHAR(100) NOT NULL,
-    f_item_region VARCHAR(100) NOT NULL,
-    f_item_time DATE DEFAULT CURDATE(),
-    f_item_des VARCHAR(300),
-    user_no VARCHAR(10) NOT NULL,
-    category_no INT NOT NULL,
-    region_no VARCHAR(10) NOT NULL,
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    PRIMARY KEY(f_item_no),
-    FOREIGN KEY(user_no) REFERENCES tb_user,
-    FOREIGN KEY(category_no) REFERENCES tb_category,
-    FOREIGN KEY(region_no) REFERENCES tb_region
-);
-
--- 매칭 테이블(tb_match)
-CREATE TABLE tb_match (
-    match_no VARCHAR(10),
-    f_item_no VARCHAR(10) NOT NULL,
-    l_item_no VARCHAR(10) NOT NULL,
-    match_status BOOLEAN NOT NULL DEFAULT FALSE,
-    match_date DATE DEFAULT CURDATE(),
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    PRIMARY KEY(match_no),
-    FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no)
-    DELETE ON CASCADE,
-    FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
-    DELETE ON CASCADE
-);
-
--- 게시판 테이블 (tb_board)
-CREATE TABLE tb_board (
-    board_no VARCHAR(10) PRIMARY KEY,
-    board_title VARCHAR(100) NOT NULL,
-    board_detail VARCHAR(300) NOT NULL,
-    board_type CHAR(1) NOT NULL CHECK (board_type IN ('b','r', 'n')),
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    up_board_no VARCHAR(10),
-    user_no VARCHAR(10) NOT NULL,
-    FOREIGN KEY(user_no) REFERENCES tb_user
-);
-
--- 알림 테이블 (tb_notification)
-CREATE TABLE tb_notification (
-    noti_no VARCHAR(10),
-    noti_date DATE DEFAULT CURDATE(),
-    detail VARCHAR(300) NOT NULL,
-    user_no VARCHAR(10) NOT NULL,
-    match_no VARCHAR(10) NOT NULL,
-    ins_date DATE DEFAULT CURDATE(),
-    upt_date DATE DEFAULT CURDATE(),
-    PRIMARY KEY (noti_no),
-    FOREIGN KEY (user_no) REFERENCES tb_user(user_no),
-    FOREIGN KEY (match_no) REFERENCES tb_match(match_no)
-    DELETE ON CASCADE
-);
-
--- 지역 테이블(tb_region)
-CREATE TABLE tb_region (
-    region_no VARCHAR(10) PRIMARY KEY,
-    sido_name VARCHAR(10),
-    sigg_name VARCHAR(10),
-    emd_name VARCHAR(10),
-    li_name VARCHAR(10),
-    ranking VARCHAR(5),
-    ins_date VARCHAR(10),
-    del_date VARCHAR(10),
-    prev_region_no VARCHAR(10)
-);
-
--- tb_region 인덱스 추가
-CREATE INDEX idx_tb_region
-ON tb_region(sido_name, sigg_name, emd_name, li_name);
-
--- 권한 테이블(tb_role)
-CREATE TABLE tb_role (
-    role_no INT PRIMARY KEY,
-    role_name VARCHAR(10) UNIQUE
-);
-
--- 카테고리 테이블(tb_category)
-CREATE TABLE tb_category (
-    category_no INT PRIMARY KEY,
-    category_name VARCHAR(20) NOT NULL
-);
-
-```
+- **DB 생성 및 테이블 생성**
+  <details>
+  <summary>SQL</summary>
+  
+  ```sql
+  CREATE DATABASE lostItems;
+  CREATE USER `items`@`%` IDENTIFIED BY 'items';
+  
+  -- 사용자 테이블 (tb_user)
+  CREATE TABLE tb_user (
+      user_no VARCHAR(10),
+      user_id VARCHAR(30) UNIQUE,
+      user_pw VARCHAR(30) NOT NULL,
+      user_mail VARCHAR(30) UNIQUE,
+      user_tel VARCHAR(15) NOT NULL,
+      user_addr VARCHAR(100) NOT NULL,
+      role_no INT,
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      PRIMARY KEY (user_no),
+      FOREIGN KEY (role_no) REFERENCES tb_role(role_no)
+  );
+  
+  -- 분실물 테이블(tb_lost_item)
+  CREATE TABLE tb_lost_item(
+      l_item_no VARCHAR(10),
+      l_item_name VARCHAR(100) NOT NULL,
+      l_item_region VARCHAR(50) NOT NULL,
+      l_item_time DATE DEFAULT CURDATE(),
+      l_item_des VARCHAR(300),
+      user_no VARCHAR(10) NOT NULL,
+      category_no INT NOT NULL,
+      region_no VARCHAR(10) NOT NULL,
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      PRIMARY KEY (l_item_no),
+      FOREIGN KEY (user_no) REFERENCES tb_user,
+      FOREIGN KEY (category_no) REFERENCES tb_category,
+      FOREIGN KEY (region_no) REFERENCES tb_region
+  );
+  
+  -- 습득물 테이블(tb_found_item)
+  CREATE TABLE tb_found_item(
+      f_item_no VARCHAR(10),
+      f_item_name VARCHAR(100) NOT NULL,
+      f_item_region VARCHAR(100) NOT NULL,
+      f_item_time DATE DEFAULT CURDATE(),
+      f_item_des VARCHAR(300),
+      user_no VARCHAR(10) NOT NULL,
+      category_no INT NOT NULL,
+      region_no VARCHAR(10) NOT NULL,
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      PRIMARY KEY(f_item_no),
+      FOREIGN KEY(user_no) REFERENCES tb_user,
+      FOREIGN KEY(category_no) REFERENCES tb_category,
+      FOREIGN KEY(region_no) REFERENCES tb_region
+  );
+  
+  -- 매칭 테이블(tb_match)
+  CREATE TABLE tb_match (
+      match_no VARCHAR(10),
+      f_item_no VARCHAR(10) NOT NULL,
+      l_item_no VARCHAR(10) NOT NULL,
+      match_status BOOLEAN NOT NULL DEFAULT FALSE,
+      match_date DATE DEFAULT CURDATE(),
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      PRIMARY KEY(match_no),
+      FOREIGN KEY(f_item_no) REFERENCES tb_found_item(f_item_no)
+      DELETE ON CASCADE,
+      FOREIGN KEY(l_item_no) REFERENCES tb_lost_item(l_item_no)
+      DELETE ON CASCADE
+  );
+  
+  -- 게시판 테이블 (tb_board)
+  CREATE TABLE tb_board (
+      board_no VARCHAR(10) PRIMARY KEY,
+      board_title VARCHAR(100) NOT NULL,
+      board_detail VARCHAR(300) NOT NULL,
+      board_type CHAR(1) NOT NULL CHECK (board_type IN ('b','r', 'n')),
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      up_board_no VARCHAR(10),
+      user_no VARCHAR(10) NOT NULL,
+      FOREIGN KEY(user_no) REFERENCES tb_user
+  );
+  
+  -- 알림 테이블 (tb_notification)
+  CREATE TABLE tb_notification (
+      noti_no VARCHAR(10),
+      noti_date DATE DEFAULT CURDATE(),
+      detail VARCHAR(300) NOT NULL,
+      user_no VARCHAR(10) NOT NULL,
+      match_no VARCHAR(10) NOT NULL,
+      ins_date DATE DEFAULT CURDATE(),
+      upt_date DATE DEFAULT CURDATE(),
+      PRIMARY KEY (noti_no),
+      FOREIGN KEY (user_no) REFERENCES tb_user(user_no),
+      FOREIGN KEY (match_no) REFERENCES tb_match(match_no)
+      DELETE ON CASCADE
+  );
+  
+  -- 지역 테이블(tb_region)
+  CREATE TABLE tb_region (
+      region_no VARCHAR(10) PRIMARY KEY,
+      sido_name VARCHAR(10),
+      sigg_name VARCHAR(10),
+      emd_name VARCHAR(10),
+      li_name VARCHAR(10),
+      ranking VARCHAR(5),
+      ins_date VARCHAR(10),
+      del_date VARCHAR(10),
+      prev_region_no VARCHAR(10)
+  );
+  
+  -- tb_region 인덱스 추가
+  CREATE INDEX idx_tb_region
+  ON tb_region(sido_name, sigg_name, emd_name, li_name);
+  
+  -- 권한 테이블(tb_role)
+  CREATE TABLE tb_role (
+      role_no INT PRIMARY KEY,
+      role_name VARCHAR(10) UNIQUE
+  );
+  
+  -- 카테고리 테이블(tb_category)
+  CREATE TABLE tb_category (
+      category_no INT PRIMARY KEY,
+      category_name VARCHAR(20) NOT NULL
+  );
+  
+  ```
+  </details>
 </details>
 
 <br><br>
@@ -234,539 +244,556 @@ CREATE TABLE tb_category (
 <details><summary>DML
 </summary>
 
-<details><summary>1. 사용자
-</summary>
+- **테스트 분류**
+  <details><summary>1. 사용자
+  </summary>
 
-<details><summary>가입
-</summary>
-
-```sql
-INSERT INTO tb_user
-VALUES ('사용자 번호', '사용자 이름', '사용자 아이디', '사용자 비밀번호', '사용자 이메일', '전화번호', '지역', 권한번호, DEFAULT, DEFAULT);
-```
-</details>
-<details><summary>로그인
-</summary>
-
-```sql
-SELECT `user_id`, `user_pw`
-FROM tb_user
-WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
-```
-</details>
-<details><summary>아이디 찾기
-</summary>
-
-```sql
-SELECT `user_id`,
-        `user_mail`
-FROM tb_user
-WHERE `user_mail` = '사용자 이메일';
-```
-</details>
-
-<details><summary>비밀번호 찾기/변경
-</summary>
-
-```sql
-UPDATE tb_user
-SET `user_pw` = SHA2('변경 할 비밀번호', 256)
-WHERE `user_pw` = (
-	SELECT `user_pw` 
-	FROM `tb_user`
-	WHERE `user_id` = '사용자 아이디' 
-	  AND `user_mail` = '사용자 이메일'
-	  AND `user_tel` = '사용자 전화번호');
-```
-</details>
-<details><summary>사용자 정보 조회
-</summary>
-
-```sql
-SELECT `user_name`, `user_mail`, `user_tel`, `user_addr`
-FROM tb_user
-WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
-```
-</details>
-
-<details><summary>문의
-</summary>
-
-```sql
-INSERT INTO tb_board
-VALUES ('문의 번호', '제목', '내용',
- 'b', DEFAULT, DEFAULT, NULL, '사용자 번호');
-```
-</details>
-
-<details><summary>탈퇴
-</summary>
-
-```sql
-DELETE
-FROM tb_user
-WHERE `user_id` = '사용자 아이디' 
-  AND `user_pw` = SHA2('사용자 비밀번호', 256)
-  AND `user_email` = '사용자 이메일';
-```
-</details>
-</details>
-
-<details><summary>2. 관리자
-</summary>
-
-<details><summary>매칭 상태 변경
-</summary>
-
-```sql
-UPDATE tb_match
-SET match_status = 1
-WHERE match_no = '매칭 번호'
-  AND user_no = '사용자 번호';
-```
-</details>
-<details><summary>카테고리 정보 등록
-</summary>
-
-```sql
-INSERT INTO tb_category
-VALUES (카테고리 번호, '카테고리 이름');
-```
-</details>
-<details><summary>공지 사항 등록
-</summary>
-
-```sql
-INSERT INTO tb_board
-VALUES (GET_NO(tb_board), '제목', '내용',
- 'n', DEFAULT, DEFAULT, NULL, '관리자 번호');
-```
-</details>
-
-<details><summary>공지 사항 삭제
-</summary>
-
-```sql
-DELETE
-FROM tb_board
-WHERE board_no = '공지사항 번호';
-```
-</details>
-<details><summary>공지 사항 수정
-</summary>
-
-```sql
-UPDATE tb_board
-SET '수정 할 컬럼' = '수정 할 내용'
-WHERE board_no = '공지사항 번호';
-```
-</details>
-
-<details><summary>지역 정보 등록
-</summary>
-
-```sql
-INSERT INTO tb_region
-VALUES ('지역 번호', '시, 도', '시, 구', '동, 면', '리', 'ranking', '등록 날짜');
-```
-</details>
-
-<details><summary>지역 정보 삭제
-</summary>
-
-```sql
-DELETE
-FROM tb_region
-WHERE region_no = '지역 번호';
-```
-</details>
-
-<details><summary>지역 정보 수정
-</summary>
-
-```sql
-UPDATE tb_region
-SET '수정 할 컬럼' = '수정 할 내용'
-WHERE region_no = '지역 번호';
-```
-</details>
-
-<details><summary>문의글에 대한 답변
-</summary>
-
-```sql
-INSERT INTO tb_board
-VALUES ('문의 답변 번호', '제목', '내용',
- 'r', DEFAULT, DEFAULT, '문의글 번호', '관리자 번호');
-```
-</details>
-<details><summary>분실물 통계
-</summary>
-
-```sql
--- a : 분실물 등록된 갯수
-SELECT COUNT(*)
-FROM tb_lost_item;
-
--- b : 등록된 분실물 중 매칭이 성공된 것
-SELECT COUNT(*)
-FROM tb_lost_item l
-LEFT OUTER JOIN tb_match m ON m.l_item_no = l.l_item_no
-WHERE m.match_status = TRUE;
-
--- c : 매칭이 성공이후 사용자 인계까지 이루어진 분실물
-SELECT COUNT(*)
-FROM tb_recyclebin
-WHERE delete_tpye = 'MS';
-
-/*
- 분실물 통계 = b + c / a + c
-*/
-```
-</details>
-</details>
-
-<details><summary>3. 분실물
-</summary>
-
-<details><summary>분실물 등록
-</summary>
-
-```sql
-INSERT INTO tb_lost_item 
-VALUES (GET_NO('분실물 번호'), '분실물 이름', 분실 장소', '분실 시간', '설명',
-            분실물 등록일자', '분실물 수정일자', '사용자 번호', '카테고리 번호', '지역 번호');
-```
-</details>
-
-
-<details><summary>분실물 검색
-</summary>
-
-```sql
-SELECT lost.*
-FROM tb_lost_item lost
-INNER JOIN tb_region region ON lost.region_no = region.region_no
-INNER JOIN tb_category cate ON lost.category_no = cate.category_no
-WHERE lost.category_no = '카테고리 번호' 
-AND lost.category_no = cate.category_no
-AND lost.region_no = region.region_no;
-```
-</details>
-
-<details><summary>분실물 수정
-</summary>
-
-```sql
-UPDATE tb_lost_item
-INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
-SET l_item_name = '수정할 수집품 이름',
-     l_item_region = '수정할 수집품 장소',
-     l_item_des = '수정할 수집품 설명'
-WHERE user_id = '사용자 아이디' AND l_item_no = '분실물 번호';
-```
-</details>
-
-<details><summary>분실물 삭제
-</summary>
-
-```sql
-DELETE
-FROM tb_lost_item
-WHERE l_item_no IN (
-    SELECT li.l_item_no
-    FROM tb_lost_item li
-    LEFT OUTER JOIN tb_match m ON li.l_item_no = m.l_item_no
-    WHERE m.match_status = 0
-      AND li.l_item_no = '분실물 번호');
-```
-</details>
-
-<details><summary>나의 분실물 조회
-</summary>
-
-```sql
-SELECT lost.*
-FROM tb_lost_item lost
-INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
-WHERE `user`.user_id = '사용자 아이디'
-ORDER BY lost.ins_date DESC; 
-```
-</details>
-</details>
-
-<details><summary>4. 습득물
-</summary>
-
-<details><summary>습득물 등록
-</summary>
-
-```sql
-INSERT INTO tb_lost_item
-VALUES ('습득물 번호',
-            '습득물 이름',
-            '습득 장소',
-            '습득 시간',
-            '설명',
-            '습득물 등록일자',
-            '습득물 수정일자',
-            '사용자 번호',
-            '카테고리 번호',
-            '지역 번호');
-```
-</details>
-
-
-<details><summary>습득물 조회
-</summary>
-
-```sql
-SELECT f.*
-FROM tb_found_item f
-INNER JOIN tb_category c ON f.category_no = c.category_no
-INNER JOIN tb_region r ON f.region_no = r.region_no
-WHERE category_name = '카테고리 이름' OR sido_name = '시도명';
-```
-</details>
-
-<details><summary>습득물 수정
-</summary>
-
-```sql
-UPDATE tb_found_item f
-INNER JOIN tb_user u ON f.user_no = u.user_no 
-SET f_item_name = '수정할 습득물 이름',
-     f_item_region = '수정할 습득 장소',
-     f_item_des = '수정할 습득물 상세정보내용',
-     ins_date = '수정한 날짜';
-```
-</details>
-
-<details><summary>습득물 삭제
-</summary>
-
-```sql
-DELETE
-FROM tb_found_item
-WHERE f_item_no IN (
-    SELECT f.f_item_no
-    FROM tb_fount_item f
-    LEFT OUTER JOIN tb_match m ON f.f_item_no = m.f_item_no
-    WHERE m.match_status = 0
-      AND fi.f_item_no = '분실물 번호');
-```
-</details>
-
-<details><summary>나의 습득물 조회
-</summary>
-
-```sql
-SELECT f.*, user_id
-FROM tb_found_item f
-INNER JOIN tb_user u ON f.user_no = u.user_no
-WHERE user_id = '사용자 아이디';
-```
-</details>
-</details>
-
-<details><summary>5. 트리거
-</summary>
-
-<details><summary>분실물이 등록된 경우 알림 전송 트리거
-</summary>
+  - **가입**
+    <details><summary>SQL
+    </summary>
     
-```sql
-DELIMITER $$
-CREATE OR REPLACE TRIGGER trg_match_loit
-AFTER INSERT ON tb_lost_item
-FOR EACH ROW
-BEGIN
-    DECLARE f_cnt INT;
+    ```sql
+    INSERT INTO tb_user
+    VALUES ('사용자 번호', '사용자 이름', '사용자 아이디', '사용자 비밀번호', '사용자 이메일', '전화번호', '지역', 권한번호, DEFAULT, DEFAULT);
+    ```
+    </details>
+  - **로그인**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT `user_id`, `user_pw`
+    FROM tb_user
+    WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
+    ```
+    </details>
+  - **아이디 찾기**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT `user_id`,
+            `user_mail`
+    FROM tb_user
+    WHERE `user_mail` = '사용자 이메일';
+    ```
+    </details>
+  - **비밀번호 찾기/변경**
+    <details><summary>비밀번호 찾기/변경
+    </summary>
+    
+    ```sql
+    UPDATE tb_user
+    SET `user_pw` = SHA2('변경 할 비밀번호', 256)
+    WHERE `user_pw` = (
+    	SELECT `user_pw` 
+    	FROM `tb_user`
+    	WHERE `user_id` = '사용자 아이디' 
+    	  AND `user_mail` = '사용자 이메일'
+    	  AND `user_tel` = '사용자 전화번호');
+    ```
+    </details>
+  - **사용자 정보 조회**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT `user_name`, `user_mail`, `user_tel`, `user_addr`
+    FROM tb_user
+    WHERE `user_id` = '사용자 아이디' AND `user_pw` = SHA2('사용자 비밀번호', 256);
+    ```
+    </details>
+  - **문의**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_board
+    VALUES ('문의 번호', '제목', '내용',
+     'b', DEFAULT, DEFAULT, NULL, '사용자 번호');
+    ```
+    </details>
+  - **탈퇴**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELETE
+    FROM tb_user
+    WHERE `user_id` = '사용자 아이디' 
+      AND `user_pw` = SHA2('사용자 비밀번호', 256)
+      AND `user_email` = '사용자 이메일';
+    ```
+    </details>
+  </details>
+  
+  <details><summary>2. 관리자
+  </summary>
 
-    SELECT COUNT(f_item_no) INTO f_cnt
+  - **매칭 상태 변경**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    UPDATE tb_match
+    SET match_status = 1
+    WHERE match_no = '매칭 번호'
+      AND user_no = '사용자 번호';
+    ```
+    </details>
+  - **카테고리 정보 등록**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_category
+    VALUES (카테고리 번호, '카테고리 이름');
+    ```
+    </details>
+  - **공지 사항 등록**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_board
+    VALUES (GET_NO(tb_board), '제목', '내용',
+     'n', DEFAULT, DEFAULT, NULL, '관리자 번호');
+    ```
+    </details>
+  - **공지 사항 삭제**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELETE
+    FROM tb_board
+    WHERE board_no = '공지사항 번호';
+    ```
+    </details>
+  - **공지 사항 수정**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    UPDATE tb_board
+    SET '수정 할 컬럼' = '수정 할 내용'
+    WHERE board_no = '공지사항 번호';
+    ```
+    </details>
+  - **지역 정보 등록**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_region
+    VALUES ('지역 번호', '시, 도', '시, 구', '동, 면', '리', 'ranking', '등록 날짜');
+    ```
+    </details>
+  - **지역 정보 삭제**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELETE
+    FROM tb_region
+    WHERE region_no = '지역 번호';
+    ```
+    </details>
+  - **지역 정보 수정**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    UPDATE tb_region
+    SET '수정 할 컬럼' = '수정 할 내용'
+    WHERE region_no = '지역 번호';
+    ```
+    </details>
+  - **문의글에 대한 답변**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_board
+    VALUES ('문의 답변 번호', '제목', '내용',
+     'r', DEFAULT, DEFAULT, '문의글 번호', '관리자 번호');
+    ```
+    </details>
+  - **분실물 통계**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    -- a : 분실물 등록된 갯수
+    SELECT COUNT(*)
+    FROM tb_lost_item;
+    
+    -- b : 등록된 분실물 중 매칭이 성공된 것
+    SELECT COUNT(*)
+    FROM tb_lost_item l
+    LEFT OUTER JOIN tb_match m ON m.l_item_no = l.l_item_no
+    WHERE m.match_status = TRUE;
+    
+    -- c : 매칭이 성공이후 사용자 인계까지 이루어진 분실물
+    SELECT COUNT(*)
+    FROM tb_recyclebin
+    WHERE delete_tpye = 'MS';
+    
+    /*
+     분실물 통계 = b + c / a + c
+    */
+    ```
+    </details>
+  </details>
+  
+  <details><summary>3. 분실물
+  </summary>
+    
+  - **분실물 등록**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_lost_item 
+    VALUES (GET_NO('분실물 번호'), '분실물 이름', 분실 장소', '분실 시간', '설명',
+                분실물 등록일자', '분실물 수정일자', '사용자 번호', '카테고리 번호', '지역 번호');
+    ```
+    </details>
+  - **분실물 검색**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT lost.*
+    FROM tb_lost_item lost
+    INNER JOIN tb_region region ON lost.region_no = region.region_no
+    INNER JOIN tb_category cate ON lost.category_no = cate.category_no
+    WHERE lost.category_no = '카테고리 번호' 
+    AND lost.category_no = cate.category_no
+    AND lost.region_no = region.region_no;
+    ```
+    </details>
+  - **분실물 수정**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    UPDATE tb_lost_item
+    INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
+    SET l_item_name = '수정할 수집품 이름',
+         l_item_region = '수정할 수집품 장소',
+         l_item_des = '수정할 수집품 설명'
+    WHERE user_id = '사용자 아이디' AND l_item_no = '분실물 번호';
+    ```
+    </details>
+  - **분실물 삭제**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELETE
+    FROM tb_lost_item
+    WHERE l_item_no IN (
+        SELECT li.l_item_no
+        FROM tb_lost_item li
+        LEFT OUTER JOIN tb_match m ON li.l_item_no = m.l_item_no
+        WHERE m.match_status = 0
+          AND li.l_item_no = '분실물 번호');
+    ```
+    </details>
+  - **나의 분실물 조회**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT lost.*
+    FROM tb_lost_item lost
+    INNER JOIN tb_user `user` ON lost.user_no = `user`.user_no
+    WHERE `user`.user_id = '사용자 아이디'
+    ORDER BY lost.ins_date DESC; 
+    ```
+    </details>
+  </details>
+  
+  <details><summary>4. 습득물
+  </summary>
+
+  - **습득물 등록**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    INSERT INTO tb_lost_item
+    VALUES ('습득물 번호',
+                '습득물 이름',
+                '습득 장소',
+                '습득 시간',
+                '설명',
+                '습득물 등록일자',
+                '습득물 수정일자',
+                '사용자 번호',
+                '카테고리 번호',
+                '지역 번호');
+    ```
+    </details>
+  - **습득물 조회**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT f.*
+    FROM tb_found_item f
+    INNER JOIN tb_category c ON f.category_no = c.category_no
+    INNER JOIN tb_region r ON f.region_no = r.region_no
+    WHERE category_name = '카테고리 이름' OR sido_name = '시도명';
+    ```
+    </details>
+  - **습득물 수정**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    UPDATE tb_found_item f
+    INNER JOIN tb_user u ON f.user_no = u.user_no 
+    SET f_item_name = '수정할 습득물 이름',
+         f_item_region = '수정할 습득 장소',
+         f_item_des = '수정할 습득물 상세정보내용',
+         ins_date = '수정한 날짜';
+    ```
+    </details>
+  - **습득물 삭제**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELETE
     FROM tb_found_item
-    WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-      AND category_no = NEW.category_no;
+    WHERE f_item_no IN (
+        SELECT f.f_item_no
+        FROM tb_fount_item f
+        LEFT OUTER JOIN tb_match m ON f.f_item_no = m.f_item_no
+        WHERE m.match_status = 0
+          AND fi.f_item_no = '분실물 번호');
+    ```
+    </details>
+  - **나의 습득물 조회**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    SELECT f.*, user_id
+    FROM tb_found_item f
+    INNER JOIN tb_user u ON f.user_no = u.user_no
+    WHERE user_id = '사용자 아이디';
+    ```
+    </details>
+  </details>
+  
+  <details><summary>5. 트리거
+  </summary>
 
-    IF f_cnt >= 1 THEN
-        INSERT INTO tb_match (match_no, f_item_no, l_item_no)
-        SELECT GET_NO('tb_match'),
-               f_item_no,
-               NEW.l_item_no
+  - **분실물이 등록된 경우 알림 전송 트리거**
+    <details><summary>SQL
+    </summary>
+        
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE TRIGGER trg_match_loit
+    AFTER INSERT ON tb_lost_item
+    FOR EACH ROW
+    BEGIN
+        DECLARE f_cnt INT;
+    
+        SELECT COUNT(f_item_no) INTO f_cnt
         FROM tb_found_item
         WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
           AND category_no = NEW.category_no;
-    END IF;
-
-END$$
-DELIMITER ;
-```
-</details>
-
-<details><summary>습득물이 등록된 경우 알림 전송 트리거
-</summary>
     
-```sql
-DELIMITER $$
-CREATE OR REPLACE TRIGGER trg_match_fdit
-AFTER INSERT ON tb_found_item
-FOR EACH ROW
-BEGIN
-    DECLARE l_cnt INT;
-
-    SELECT COUNT(l_item_no) INTO l_cnt
-    FROM tb_lost_item
-    WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-      AND category_no = NEW.category_no;
-
-    IF l_cnt >= 1 THEN
-        INSERT INTO tb_match (match_no, f_item_no, l_item_no)
-        SELECT GET_NO('tb_match'),
-               NEW.f_item_no,
-               l_item_no
+        IF f_cnt >= 1 THEN
+            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+            SELECT GET_NO('tb_match'),
+                   f_item_no,
+                   NEW.l_item_no
+            FROM tb_found_item
+            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+              AND category_no = NEW.category_no;
+        END IF;
+    
+    END$$
+    DELIMITER ;
+    ```
+    </details>
+  - **습득물이 등록된 경우 알림 전송 트리거**
+    <details><summary>SQL
+    </summary>
+        
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE TRIGGER trg_match_fdit
+    AFTER INSERT ON tb_found_item
+    FOR EACH ROW
+    BEGIN
+        DECLARE l_cnt INT;
+    
+        SELECT COUNT(l_item_no) INTO l_cnt
         FROM tb_lost_item
         WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
           AND category_no = NEW.category_no;
-    END IF;
-
-END$$
-DELIMITER ;
-```
-</details>
-</details>
-
-<details><summary>6. 함수
-</summary>
     
-```sql
-BEGIN
-	DECLARE v_prefix VARCHAR(10);
- 	DECLARE v_hypen CHAR(1);
- 	DECLARE v_formmater INT;
-	DECLARE v_no VARCHAR(30);
-	
-	-- id 규칙 가져오기
-	SELECT PREFIX, hypen_yn, formmater 
-	INTO v_prefix, v_hypen, v_formmater
-	FROM auto_no
-	WHERE TABLE_NAME = tb_name;
-	
-	-- 가져온 값으로 insert update
-	INSERT INTO auto_no_dtl
-	(TABLE_NAME, PREFIX, hypen_yn, formmater)
-	VALUES
-	(tb_name, v_prefix, v_hypen, v_formmater)
-	ON DUPLICATE KEY
-	UPDATE SEQUENCE = SEQUENCE + 1;
-	
-	SELECT CONCAT(PREFIX, if(hypen_yn = 'Y', '-', ''), LPAD(SEQUENCE, 8, '0')) INTO v_NO
-	FROM auto_no_dtl
-	WHERE TABLE_NAME = tb_name
-	  AND PREFIX = v_prefix
-	  AND hypen_yn = v_hypen
-	  AND formmater = v_formmater;
+        IF l_cnt >= 1 THEN
+            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+            SELECT GET_NO('tb_match'),
+                   NEW.f_item_no,
+                   l_item_no
+            FROM tb_lost_item
+            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+              AND category_no = NEW.category_no;
+        END IF;
+    
+    END$$
+    DELIMITER ;
+    ```
+    </details>
+  </details>
+  
+  <details><summary>6. 함수
+  </summary>
 
-	RETURN v_no;
-END
-```
-</details>
+  - **기간 만료 물품 삭제 이벤트**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    BEGIN
+    	DECLARE v_prefix VARCHAR(10);
+     	DECLARE v_hypen CHAR(1);
+     	DECLARE v_formmater INT;
+    	DECLARE v_no VARCHAR(30);
+    	
+    	-- id 규칙 가져오기
+    	SELECT PREFIX, hypen_yn, formmater 
+    	INTO v_prefix, v_hypen, v_formmater
+    	FROM auto_no
+    	WHERE TABLE_NAME = tb_name;
+    	
+    	-- 가져온 값으로 insert update
+    	INSERT INTO auto_no_dtl
+    	(TABLE_NAME, PREFIX, hypen_yn, formmater)
+    	VALUES
+    	(tb_name, v_prefix, v_hypen, v_formmater)
+    	ON DUPLICATE KEY
+    	UPDATE SEQUENCE = SEQUENCE + 1;
+    	
+    	SELECT CONCAT(PREFIX, if(hypen_yn = 'Y', '-', ''), LPAD(SEQUENCE, 8, '0')) INTO v_NO
+    	FROM auto_no_dtl
+    	WHERE TABLE_NAME = tb_name
+    	  AND PREFIX = v_prefix
+    	  AND hypen_yn = v_hypen
+    	  AND formmater = v_formmater;
+    
+    	RETURN v_no;
+    END
+    ```
+    </details>
+  </details>
+  
+  <details><summary>7. 프로시저
+  </summary>
 
-<details><summary>7. 프로시저
-</summary>
+  - **180일 지난 습득물 삭제 프로시저**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE PROCEDURE delFdProc ()
+    BEGIN
+          INSERT INTO tb_recyclebin(
+          rb_no, delete_tpye, f_item_name, f_item_region, f_item_time, f_item_des, f_user_no, f_category_no, f_region_no
+          ) SELECT
+          GET_NO('tb_recyclebin') , 'PE', A.f_item_name, A.f_item_region, A.f_item_time, A.f_item_des, A.user_no, A.category_no, A.region_no
+          FROM tb_found_item A
+          LEFT OUTER JOIN
+            (SELECT fi.l_item_no
+             FROM tb_found_item fi
+             LEFT OUTER JOIN tb_match m ON m.f_item_no = li.f_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.f_item_no = A.f_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.f_item_no IS NULL;
+    
+          DELETE A FROM tb_found_item A
+          LEFT JOIN (
+              SELECT fi.l_item_no
+              FROM tb_found_item fi
+              LEFT JOIN tb_match m ON m.l_item_no = fi.l_item_no
+              WHERE m.match_status = TRUE
+          ) B ON B.f_item_no = A.f_item_no
+          WHERE A.ins_date <= SUBDATE(CURDATE(), 180)
+            AND A.upt_date <= SUBDATE(CURDATE(), 180)
+            AND B.f_item_no IS NULL;
+    END $$
+    DELIMITER ;
+    ```
+    </details>
+  - **180일 지난 분실물 삭제 프로시저**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE PROCEDURE delLiProc ()
+    BEGIN
+          INSERT INTO tb_recyclebin(
+          rb_no, delete_tpye, l_item_name, l_item_region, l_item_time, l_item_des, l_user_no, l_category_no, l_region_no
+          ) SELECT
+          GET_NO('tb_recyclebin') , 'PE', A.l_item_name, A.l_item_region, A.l_item_time, A.l_item_des, A.user_no, A.category_no, A.region_no
+          FROM tb_lost_item A
+          LEFT OUTER JOIN
+            (SELECT li.l_item_no
+             FROM tb_lost_item li
+             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.l_item_no IS NULL;
+    
+          DELETE FROM tb_lost_item A, B
+          LEFT OUTER JOIN
+            (SELECT li.l_item_no
+             FROM tb_lost_item li
+             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.l_item_no IS NULL;
+    END $$
+    DELIMITER ;
+    ```
+    </details>
+  </details>
+  
+  <details><summary>8. 이벤트
+  </summary>
 
-<details><summary>180일 지난 습득물 삭제 프로시저
-</summary>
-
-```sql
-DELIMITER $$
-CREATE OR REPLACE PROCEDURE delFdProc ()
-BEGIN
-      INSERT INTO tb_recyclebin(
-      rb_no, delete_tpye, f_item_name, f_item_region, f_item_time, f_item_des, f_user_no, f_category_no, f_region_no
-      ) SELECT
-      GET_NO('tb_recyclebin') , 'PE', A.f_item_name, A.f_item_region, A.f_item_time, A.f_item_des, A.user_no, A.category_no, A.region_no
-      FROM tb_found_item A
-      LEFT OUTER JOIN
-        (SELECT fi.l_item_no
-         FROM tb_found_item fi
-         LEFT OUTER JOIN tb_match m ON m.f_item_no = li.f_item_no
-         WHERE 1=1
-           AND m.match_status = TRUE ) B ON B.f_item_no = A.f_item_no
-      WHERE 1=1
-        AND A.ins_date <= subDATE(CURDATE(), 180)
-        AND A.upt_date <= subDATE(CURDATE(), 180)
-        AND B.f_item_no IS NULL;
-
-      DELETE A FROM tb_found_item A
-      LEFT JOIN (
-          SELECT fi.l_item_no
-          FROM tb_found_item fi
-          LEFT JOIN tb_match m ON m.l_item_no = fi.l_item_no
-          WHERE m.match_status = TRUE
-      ) B ON B.f_item_no = A.f_item_no
-      WHERE A.ins_date <= SUBDATE(CURDATE(), 180)
-        AND A.upt_date <= SUBDATE(CURDATE(), 180)
-        AND B.f_item_no IS NULL;
-END $$
-DELIMITER ;
-```
-</details>
-
-
-<details><summary>180일 지난 분실물 삭제 프로시저
-</summary>
-
-```sql
-DELIMITER $$
-CREATE OR REPLACE PROCEDURE delLiProc ()
-BEGIN
-      INSERT INTO tb_recyclebin(
-      rb_no, delete_tpye, l_item_name, l_item_region, l_item_time, l_item_des, l_user_no, l_category_no, l_region_no
-      ) SELECT
-      GET_NO('tb_recyclebin') , 'PE', A.l_item_name, A.l_item_region, A.l_item_time, A.l_item_des, A.user_no, A.category_no, A.region_no
-      FROM tb_lost_item A
-      LEFT OUTER JOIN
-        (SELECT li.l_item_no
-         FROM tb_lost_item li
-         LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
-         WHERE 1=1
-           AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
-      WHERE 1=1
-        AND A.ins_date <= subDATE(CURDATE(), 180)
-        AND A.upt_date <= subDATE(CURDATE(), 180)
-        AND B.l_item_no IS NULL;
-
-      DELETE FROM tb_lost_item A, B
-      LEFT OUTER JOIN
-        (SELECT li.l_item_no
-         FROM tb_lost_item li
-         LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
-         WHERE 1=1
-           AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
-      WHERE 1=1
-        AND A.ins_date <= subDATE(CURDATE(), 180)
-        AND A.upt_date <= subDATE(CURDATE(), 180)
-        AND B.l_item_no IS NULL;
-END $$
-DELIMITER ;
-```
-</details>
-</details>
-
-<details><summary>8. 이벤트
-</summary>
-
-<details><summary>기간 만료 물품 삭제 이벤트
-</summary>
-
-```sql
-BEGIN
-      CALL delLiProc();
-      CALL delFdProc();
-END
-```
-</details>
-</details>
+  - **기간 만료 물품 삭제 이벤트**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    BEGIN
+          CALL delLiProc();
+          CALL delFdProc();
+    END
+    ```
+    </details>
+  </details>
 </details>
 
 </details>
