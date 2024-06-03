@@ -235,8 +235,8 @@
   
   ```
   </details>
-
-    <details><summary>1. 트리거
+- **트리거, 함수, 프로시저, 이벤트 생성**
+    <details><summary>트리거
   </summary>
 
   - **분실물이 등록된 경우 알림 전송 트리거**
@@ -303,7 +303,7 @@
     </details>
   </details>
 
-  <details><summary>2. 함수
+  <details><summary>함수
   </summary>
 
   - **기간 만료 물품 삭제 이벤트**
@@ -344,7 +344,7 @@
     </details>
   </details>
   
-  <details><summary>3. 프로시저
+  <details><summary>프로시저
   </summary>
 
   - **180일 지난 습득물 삭제 프로시저**
@@ -421,6 +421,28 @@
             AND A.upt_date <= subDATE(CURDATE(), 180)
             AND B.l_item_no IS NULL;
     END $$
+    DELIMITER ;
+    ```
+    </details>
+  </details>
+
+    <details><summary>이벤트
+  </summary>
+
+  - **기간 만료 물품 삭제 이벤트**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    CREATE OR REPLACE EVENT item_expiration
+        ON SCHEDULE EVERY 1 DAY
+        STARTS '2024-05-31 00:10:00'
+        COMMENT '매일 1회 0시 10분에 실행하는 프로시저'
+        DO
+        BEGIN
+          CALL delLiProc();
+          CALL delFdProc();
+        END$$
     DELIMITER ;
     ```
     </details>
@@ -778,28 +800,6 @@
     FROM tb_found_item f
     INNER JOIN tb_user u ON f.user_no = u.user_no
     WHERE user_id = '사용자 아이디';
-    ```
-    </details>
-  </details>
-  
-  <details><summary>6. 이벤트
-  </summary>
-
-  - **기간 만료 물품 삭제 이벤트**
-    <details><summary>SQL
-    </summary>
-    
-    ```sql
-    CREATE OR REPLACE EVENT item_expiration
-        ON SCHEDULE EVERY 1 DAY
-        STARTS '2024-05-31 00:10:00'
-        COMMENT '매일 1회 0시 10분에 실행하는 프로시저'
-        DO
-        BEGIN
-          CALL delLiProc();
-          CALL delFdProc();
-        END$$
-    DELIMITER ;
     ```
     </details>
   </details>
