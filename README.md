@@ -787,10 +787,16 @@
     </summary>
     
     ```sql
-    BEGIN
+    CREATE OR REPLACE EVENT item_expiration
+        ON SCHEDULE EVERY 1 DAY
+        STARTS '2024-05-31 00:10:00'
+        COMMENT '매일 1회 0시 10분에 실행하는 프로시저'
+        DO
+        BEGIN
           CALL delLiProc();
           CALL delFdProc();
-    END
+        END$$
+    DELIMITER ;
     ```
     </details>
   </details>
