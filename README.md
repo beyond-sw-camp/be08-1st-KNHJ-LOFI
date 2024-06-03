@@ -77,6 +77,9 @@
 
 <br>
 
+## 📎 지역 데이터
+[전국 법정동 csv 파일 링크](https://www.data.go.kr/data/15063424/fileData.do)
+
 
 <br><br>
 
