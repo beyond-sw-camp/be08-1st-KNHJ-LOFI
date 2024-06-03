@@ -235,6 +235,196 @@
   
   ```
   </details>
+
+    <details><summary>1. 트리거
+  </summary>
+
+  - **분실물이 등록된 경우 알림 전송 트리거**
+    <details><summary>SQL
+    </summary>
+        
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE TRIGGER trg_match_loit
+    AFTER INSERT ON tb_lost_item
+    FOR EACH ROW
+    BEGIN
+        DECLARE f_cnt INT;
+    
+        SELECT COUNT(f_item_no) INTO f_cnt
+        FROM tb_found_item
+        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+          AND category_no = NEW.category_no;
+    
+        IF f_cnt >= 1 THEN
+            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+            SELECT GET_NO('tb_match'),
+                   f_item_no,
+                   NEW.l_item_no
+            FROM tb_found_item
+            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+              AND category_no = NEW.category_no;
+        END IF;
+    
+    END$$
+    DELIMITER ;
+    ```
+    </details>
+  - **습득물이 등록된 경우 알림 전송 트리거**
+    <details><summary>SQL
+    </summary>
+        
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE TRIGGER trg_match_fdit
+    AFTER INSERT ON tb_found_item
+    FOR EACH ROW
+    BEGIN
+        DECLARE l_cnt INT;
+    
+        SELECT COUNT(l_item_no) INTO l_cnt
+        FROM tb_lost_item
+        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+          AND category_no = NEW.category_no;
+    
+        IF l_cnt >= 1 THEN
+            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
+            SELECT GET_NO('tb_match'),
+                   NEW.f_item_no,
+                   l_item_no
+            FROM tb_lost_item
+            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
+              AND category_no = NEW.category_no;
+        END IF;
+    
+    END$$
+    DELIMITER ;
+    ```
+    </details>
+  </details>
+
+  <details><summary>2. 함수
+  </summary>
+
+  - **기간 만료 물품 삭제 이벤트**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    BEGIN
+    	DECLARE v_prefix VARCHAR(10);
+     	DECLARE v_hypen CHAR(1);
+     	DECLARE v_formmater INT;
+    	DECLARE v_no VARCHAR(30);
+    	
+    	-- id 규칙 가져오기
+    	SELECT PREFIX, hypen_yn, formmater 
+    	INTO v_prefix, v_hypen, v_formmater
+    	FROM auto_no
+    	WHERE TABLE_NAME = tb_name;
+    	
+    	-- 가져온 값으로 insert update
+    	INSERT INTO auto_no_dtl
+    	(TABLE_NAME, PREFIX, hypen_yn, formmater)
+    	VALUES
+    	(tb_name, v_prefix, v_hypen, v_formmater)
+    	ON DUPLICATE KEY
+    	UPDATE SEQUENCE = SEQUENCE + 1;
+    	
+    	SELECT CONCAT(PREFIX, if(hypen_yn = 'Y', '-', ''), LPAD(SEQUENCE, 8, '0')) INTO v_NO
+    	FROM auto_no_dtl
+    	WHERE TABLE_NAME = tb_name
+    	  AND PREFIX = v_prefix
+    	  AND hypen_yn = v_hypen
+    	  AND formmater = v_formmater;
+    
+    	RETURN v_no;
+    END
+    ```
+    </details>
+  </details>
+  
+  <details><summary>3. 프로시저
+  </summary>
+
+  - **180일 지난 습득물 삭제 프로시저**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE PROCEDURE delFdProc ()
+    BEGIN
+          INSERT INTO tb_recyclebin(
+          rb_no, delete_tpye, f_item_name, f_item_region, f_item_time, f_item_des, f_user_no, f_category_no, f_region_no
+          ) SELECT
+          GET_NO('tb_recyclebin') , 'PE', A.f_item_name, A.f_item_region, A.f_item_time, A.f_item_des, A.user_no, A.category_no, A.region_no
+          FROM tb_found_item A
+          LEFT OUTER JOIN
+            (SELECT fi.l_item_no
+             FROM tb_found_item fi
+             LEFT OUTER JOIN tb_match m ON m.f_item_no = li.f_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.f_item_no = A.f_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.f_item_no IS NULL;
+    
+          DELETE A FROM tb_found_item A
+          LEFT JOIN (
+              SELECT fi.l_item_no
+              FROM tb_found_item fi
+              LEFT JOIN tb_match m ON m.l_item_no = fi.l_item_no
+              WHERE m.match_status = TRUE
+          ) B ON B.f_item_no = A.f_item_no
+          WHERE A.ins_date <= SUBDATE(CURDATE(), 180)
+            AND A.upt_date <= SUBDATE(CURDATE(), 180)
+            AND B.f_item_no IS NULL;
+    END $$
+    DELIMITER ;
+    ```
+    </details>
+  - **180일 지난 분실물 삭제 프로시저**
+    <details><summary>SQL
+    </summary>
+    
+    ```sql
+    DELIMITER $$
+    CREATE OR REPLACE PROCEDURE delLiProc ()
+    BEGIN
+          INSERT INTO tb_recyclebin(
+          rb_no, delete_tpye, l_item_name, l_item_region, l_item_time, l_item_des, l_user_no, l_category_no, l_region_no
+          ) SELECT
+          GET_NO('tb_recyclebin') , 'PE', A.l_item_name, A.l_item_region, A.l_item_time, A.l_item_des, A.user_no, A.category_no, A.region_no
+          FROM tb_lost_item A
+          LEFT OUTER JOIN
+            (SELECT li.l_item_no
+             FROM tb_lost_item li
+             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.l_item_no IS NULL;
+    
+          DELETE FROM tb_lost_item A, B
+          LEFT OUTER JOIN
+            (SELECT li.l_item_no
+             FROM tb_lost_item li
+             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
+             WHERE 1=1
+               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
+          WHERE 1=1
+            AND A.ins_date <= subDATE(CURDATE(), 180)
+            AND A.upt_date <= subDATE(CURDATE(), 180)
+            AND B.l_item_no IS NULL;
+    END $$
+    DELIMITER ;
+    ```
+    </details>
+  </details>
 </details>
 
 <br><br>
@@ -592,197 +782,7 @@
     </details>
   </details>
   
-  <details><summary>5. 트리거
-  </summary>
-
-  - **분실물이 등록된 경우 알림 전송 트리거**
-    <details><summary>SQL
-    </summary>
-        
-    ```sql
-    DELIMITER $$
-    CREATE OR REPLACE TRIGGER trg_match_loit
-    AFTER INSERT ON tb_lost_item
-    FOR EACH ROW
-    BEGIN
-        DECLARE f_cnt INT;
-    
-        SELECT COUNT(f_item_no) INTO f_cnt
-        FROM tb_found_item
-        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-          AND category_no = NEW.category_no;
-    
-        IF f_cnt >= 1 THEN
-            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
-            SELECT GET_NO('tb_match'),
-                   f_item_no,
-                   NEW.l_item_no
-            FROM tb_found_item
-            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-              AND category_no = NEW.category_no;
-        END IF;
-    
-    END$$
-    DELIMITER ;
-    ```
-    </details>
-  - **습득물이 등록된 경우 알림 전송 트리거**
-    <details><summary>SQL
-    </summary>
-        
-    ```sql
-    DELIMITER $$
-    CREATE OR REPLACE TRIGGER trg_match_fdit
-    AFTER INSERT ON tb_found_item
-    FOR EACH ROW
-    BEGIN
-        DECLARE l_cnt INT;
-    
-        SELECT COUNT(l_item_no) INTO l_cnt
-        FROM tb_lost_item
-        WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-          AND category_no = NEW.category_no;
-    
-        IF l_cnt >= 1 THEN
-            INSERT INTO tb_match (match_no, f_item_no, l_item_no)
-            SELECT GET_NO('tb_match'),
-                   NEW.f_item_no,
-                   l_item_no
-            FROM tb_lost_item
-            WHERE region_no LIKE CONCAT(SUBSTRING(NEW.region_no, 1, 4), '%')
-              AND category_no = NEW.category_no;
-        END IF;
-    
-    END$$
-    DELIMITER ;
-    ```
-    </details>
-  </details>
-  
-  <details><summary>6. 함수
-  </summary>
-
-  - **기간 만료 물품 삭제 이벤트**
-    <details><summary>SQL
-    </summary>
-    
-    ```sql
-    BEGIN
-    	DECLARE v_prefix VARCHAR(10);
-     	DECLARE v_hypen CHAR(1);
-     	DECLARE v_formmater INT;
-    	DECLARE v_no VARCHAR(30);
-    	
-    	-- id 규칙 가져오기
-    	SELECT PREFIX, hypen_yn, formmater 
-    	INTO v_prefix, v_hypen, v_formmater
-    	FROM auto_no
-    	WHERE TABLE_NAME = tb_name;
-    	
-    	-- 가져온 값으로 insert update
-    	INSERT INTO auto_no_dtl
-    	(TABLE_NAME, PREFIX, hypen_yn, formmater)
-    	VALUES
-    	(tb_name, v_prefix, v_hypen, v_formmater)
-    	ON DUPLICATE KEY
-    	UPDATE SEQUENCE = SEQUENCE + 1;
-    	
-    	SELECT CONCAT(PREFIX, if(hypen_yn = 'Y', '-', ''), LPAD(SEQUENCE, 8, '0')) INTO v_NO
-    	FROM auto_no_dtl
-    	WHERE TABLE_NAME = tb_name
-    	  AND PREFIX = v_prefix
-    	  AND hypen_yn = v_hypen
-    	  AND formmater = v_formmater;
-    
-    	RETURN v_no;
-    END
-    ```
-    </details>
-  </details>
-  
-  <details><summary>7. 프로시저
-  </summary>
-
-  - **180일 지난 습득물 삭제 프로시저**
-    <details><summary>SQL
-    </summary>
-    
-    ```sql
-    DELIMITER $$
-    CREATE OR REPLACE PROCEDURE delFdProc ()
-    BEGIN
-          INSERT INTO tb_recyclebin(
-          rb_no, delete_tpye, f_item_name, f_item_region, f_item_time, f_item_des, f_user_no, f_category_no, f_region_no
-          ) SELECT
-          GET_NO('tb_recyclebin') , 'PE', A.f_item_name, A.f_item_region, A.f_item_time, A.f_item_des, A.user_no, A.category_no, A.region_no
-          FROM tb_found_item A
-          LEFT OUTER JOIN
-            (SELECT fi.l_item_no
-             FROM tb_found_item fi
-             LEFT OUTER JOIN tb_match m ON m.f_item_no = li.f_item_no
-             WHERE 1=1
-               AND m.match_status = TRUE ) B ON B.f_item_no = A.f_item_no
-          WHERE 1=1
-            AND A.ins_date <= subDATE(CURDATE(), 180)
-            AND A.upt_date <= subDATE(CURDATE(), 180)
-            AND B.f_item_no IS NULL;
-    
-          DELETE A FROM tb_found_item A
-          LEFT JOIN (
-              SELECT fi.l_item_no
-              FROM tb_found_item fi
-              LEFT JOIN tb_match m ON m.l_item_no = fi.l_item_no
-              WHERE m.match_status = TRUE
-          ) B ON B.f_item_no = A.f_item_no
-          WHERE A.ins_date <= SUBDATE(CURDATE(), 180)
-            AND A.upt_date <= SUBDATE(CURDATE(), 180)
-            AND B.f_item_no IS NULL;
-    END $$
-    DELIMITER ;
-    ```
-    </details>
-  - **180일 지난 분실물 삭제 프로시저**
-    <details><summary>SQL
-    </summary>
-    
-    ```sql
-    DELIMITER $$
-    CREATE OR REPLACE PROCEDURE delLiProc ()
-    BEGIN
-          INSERT INTO tb_recyclebin(
-          rb_no, delete_tpye, l_item_name, l_item_region, l_item_time, l_item_des, l_user_no, l_category_no, l_region_no
-          ) SELECT
-          GET_NO('tb_recyclebin') , 'PE', A.l_item_name, A.l_item_region, A.l_item_time, A.l_item_des, A.user_no, A.category_no, A.region_no
-          FROM tb_lost_item A
-          LEFT OUTER JOIN
-            (SELECT li.l_item_no
-             FROM tb_lost_item li
-             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
-             WHERE 1=1
-               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
-          WHERE 1=1
-            AND A.ins_date <= subDATE(CURDATE(), 180)
-            AND A.upt_date <= subDATE(CURDATE(), 180)
-            AND B.l_item_no IS NULL;
-    
-          DELETE FROM tb_lost_item A, B
-          LEFT OUTER JOIN
-            (SELECT li.l_item_no
-             FROM tb_lost_item li
-             LEFT OUTER JOIN tb_match m ON m.l_item_no = li.l_item_no
-             WHERE 1=1
-               AND m.match_status = TRUE ) B ON B.l_item_no = A.l_item_no
-          WHERE 1=1
-            AND A.ins_date <= subDATE(CURDATE(), 180)
-            AND A.upt_date <= subDATE(CURDATE(), 180)
-            AND B.l_item_no IS NULL;
-    END $$
-    DELIMITER ;
-    ```
-    </details>
-  </details>
-  
-  <details><summary>8. 이벤트
+  <details><summary>6. 이벤트
   </summary>
 
   - **기간 만료 물품 삭제 이벤트**
@@ -812,7 +812,7 @@
 ## 🕯 회고
 | 이름 | 내용 |
 | :----: | :----: |
-| 김나현 | 내용 |
-| 김종원 | 내용 |
-| 장현준 | 내용 |
-| 조은희 | 내용 |
+| 김나현 | 실습으로 가벼운 것들만 진행하다가 직접 데이터 베이스를 활용할 수 있어 좋은 경험이 될 수 있었다. <br> 팀원들과 함께 진행하여 헷갈리거나 모르는 점도 도와가며 팀원들에게 배울 수 있어서 좋았다. <br> 짧은 기간동안 함께 잘 이끌어준 팀원들에게 정말 고맙고 재미있었다고 말해주고 싶다! |
+| 김종원 | 처음 만난 팀원들과 좋은 팀워크로 프로젝트를 마무리 한 것 같아 좋았고 팀원들 모두 열심히 잘해줘서 결과도 만족 스러웠습니다. <br> 이 프로젝트를 통해 DB 설계에 대한 자신감이 생겼고 여러 서비스에 대한 DB를 생각해 볼 수 있는 경험이었습니다. <br> 그리고 짧지 않던 시간동안 고생해준 팀원들에게 고마웠습니다. |
+| 장현준 | 기존에는 oracle만 써봐서 mysql 문법은 좀 어색했지만 쓰다보니 둘 사이 유사한 점이 많아서 어렵지 않게 적응할 수 있었다. <br> 그리고 이번 프로젝트를 하면서 수업시간에 배운 것을 다시 공부하고, 사용해보면서 mysql문법에 많이 익숙해진 것 같다. <br> 무엇보다 팀원 모두 적극적으로 참여해주고, 의견을 제시하면서도 충돌없이 프로젝트를 마무리해서 고마웠습니다. |
+| 조은희 | 처음부터 설계를 완벽하게 하고 싶었지만 실제로 DB를 생성하고 이벤트, 트리거를 만들다보니 변경사항이 생길 수 밖에 없었고 <br> 어떻게 하면 더 효율적으로 관리할 수 있을지 고민을 많이 했기에 다음 프로젝트에 도움이 많이 될 것 같습니다. <br> 또한 짧은 기간이었지만 조원들이 잘 따라와줘서 프로젝트를 수월하게 진행할 수 있었습니다 ! 다들 감사합니다 😉 |
