@@ -325,7 +325,7 @@ WHERE match_no = '매칭 번호'
   AND user_no = '사용자 번호';
 ```
 </details>
-<details><summary>카테고리 정보를 등록
+<details><summary>카테고리 정보 등록
 </summary>
 
 ```sql
@@ -398,6 +398,30 @@ WHERE region_no = '지역 번호';
 INSERT INTO tb_board
 VALUES ('문의 답변 번호', '제목', '내용',
  'r', DEFAULT, DEFAULT, '문의글 번호', '관리자 번호');
+```
+</details>
+<details><summary>분실물 통계
+</summary>
+
+```sql
+-- a : 분실물 등록된 갯수
+SELECT COUNT(*)
+FROM tb_lost_item;
+
+-- b : 등록된 분실물 중 매칭이 성공된 것
+SELECT COUNT(*)
+FROM tb_lost_item l
+LEFT OUTER JOIN tb_match m ON m.l_item_no = l.l_item_no
+WHERE m.match_status = TRUE;
+
+-- c : 매칭이 성공이후 사용자 인계까지 이루어진 분실물
+SELECT COUNT(*)
+FROM tb_recyclebin
+WHERE delete_tpye = 'MS';
+
+/*
+ 분실물 통계 = b + c / a + c
+*/
 ```
 </details>
 </details>
