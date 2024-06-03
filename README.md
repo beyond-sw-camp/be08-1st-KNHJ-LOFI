@@ -222,6 +222,9 @@ CREATE TABLE tb_category (
 <br><br>
 
 ## 💡 테스트 케이스
+[테스트 케이스 바로가기](https://docs.google.com/spreadsheets/d/1obRwcAQ55cM4DIk6DChcbbeFNfoHxEs7MsRrZOwzMGg/edit#gid=1143330171)
+<br><br>
+![image](https://github.com/beyond-sw-camp/be08-1st-2go-lofi/assets/82626246/2d029ea0-d646-4d88-84c6-06116f11f84b)
 
 <details><summary>DML
 </summary>
@@ -647,9 +650,6 @@ END
 </details>
 </details>
 
-
-
-
-
 </details>
+
 <br><br>
